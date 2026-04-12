@@ -14,16 +14,219 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      availability: {
+        Row: {
+          date: string
+          id: string
+          is_available: boolean
+          room_id: string
+        }
+        Insert: {
+          date: string
+          id?: string
+          is_available?: boolean
+          room_id: string
+        }
+        Update: {
+          date?: string
+          id?: string
+          is_available?: boolean
+          room_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "availability_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bookings: {
+        Row: {
+          add_ons: Json | null
+          check_in: string
+          check_out: string
+          created_at: string
+          guest_email: string
+          guest_name: string
+          guest_phone: string
+          id: string
+          room_id: string | null
+          service_type: string
+          status: Database["public"]["Enums"]["booking_status"]
+          total_price: number
+        }
+        Insert: {
+          add_ons?: Json | null
+          check_in: string
+          check_out: string
+          created_at?: string
+          guest_email: string
+          guest_name: string
+          guest_phone: string
+          id?: string
+          room_id?: string | null
+          service_type: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          total_price: number
+        }
+        Update: {
+          add_ons?: Json | null
+          check_in?: string
+          check_out?: string
+          created_at?: string
+          guest_email?: string
+          guest_name?: string
+          guest_phone?: string
+          id?: string
+          room_id?: string | null
+          service_type?: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          total_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contact_messages: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          name: string
+          phone: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          name: string
+          phone: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          name?: string
+          phone?: string
+        }
+        Relationships: []
+      }
+      rooms: {
+        Row: {
+          amenities: string[] | null
+          capacity: number
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_available: boolean
+          name: string
+          price_per_night: number
+          type: string
+        }
+        Insert: {
+          amenities?: string[] | null
+          capacity?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_available?: boolean
+          name: string
+          price_per_night: number
+          type: string
+        }
+        Update: {
+          amenities?: string[] | null
+          capacity?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_available?: boolean
+          name?: string
+          price_per_night?: number
+          type?: string
+        }
+        Relationships: []
+      }
+      services: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_available: boolean
+          name: string
+          price: number
+          type: Database["public"]["Enums"]["service_type"]
+          unit: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_available?: boolean
+          name: string
+          price: number
+          type: Database["public"]["Enums"]["service_type"]
+          unit?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_available?: boolean
+          name?: string
+          price?: number
+          type?: Database["public"]["Enums"]["service_type"]
+          unit?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      booking_status: "pending" | "confirmed" | "cancelled"
+      service_type: "hall" | "tent" | "food"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +353,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      booking_status: ["pending", "confirmed", "cancelled"],
+      service_type: ["hall", "tent", "food"],
+    },
   },
 } as const
