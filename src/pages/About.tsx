@@ -1,10 +1,11 @@
 import Layout from '@/components/Layout';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { motion } from 'framer-motion';
 import { Heart, Users, Mountain, Leaf } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
-const highlights = [
+const defaultHighlights = [
   { icon: Heart, value: '8+', label: 'Years of Hospitality' },
   { icon: Users, value: '5000+', label: 'Happy Guests' },
   { icon: Mountain, value: '360°', label: 'Mountain Views' },
@@ -13,6 +14,23 @@ const highlights = [
 
 const About = () => {
   const { t } = useLanguage();
+  const { data: settings } = useSiteSettings();
+
+  const story = settings?.about_story || t('about.storyText');
+  const mission = settings?.about_mission || t('about.missionText');
+
+  let highlights = defaultHighlights;
+  if (settings?.about_highlights) {
+    try {
+      const h = JSON.parse(settings.about_highlights);
+      highlights = [
+        { icon: Heart, value: h.years || '8+', label: 'Years of Hospitality' },
+        { icon: Users, value: h.guests || '5000+', label: 'Happy Guests' },
+        { icon: Mountain, value: h.rating || '4.8', label: 'Star Rating' },
+        { icon: Leaf, value: h.rooms || '12', label: 'Rooms' },
+      ];
+    } catch {}
+  }
 
   return (
     <Layout>
@@ -21,22 +39,12 @@ const About = () => {
           {t('about.title')}
         </h1>
 
-        {/* Story */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-16 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-          >
+          <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
             <h2 className="font-heading text-2xl font-bold mb-4">{t('about.story')}</h2>
-            <p className="text-muted-foreground leading-relaxed">{t('about.storyText')}</p>
+            <p className="text-muted-foreground leading-relaxed">{story}</p>
           </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="rounded-lg overflow-hidden"
-          >
+          <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="rounded-lg overflow-hidden">
             <img
               src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&q=80"
               alt="Himalay Homestay"
@@ -46,22 +54,14 @@ const About = () => {
           </motion.div>
         </div>
 
-        {/* Mission */}
         <div className="bg-primary/5 rounded-2xl p-8 mb-16 text-center max-w-3xl mx-auto">
           <h2 className="font-heading text-2xl font-bold mb-4">{t('about.mission')}</h2>
-          <p className="text-muted-foreground leading-relaxed text-lg">{t('about.missionText')}</p>
+          <p className="text-muted-foreground leading-relaxed text-lg">{mission}</p>
         </div>
 
-        {/* Highlights */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {highlights.map((h, i) => (
-            <motion.div
-              key={h.label}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-            >
+            <motion.div key={h.label} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
               <Card className="text-center">
                 <CardContent className="p-6">
                   <h.icon className="h-8 w-8 text-primary mx-auto mb-2" />
