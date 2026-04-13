@@ -1,66 +1,97 @@
 
-# Homestay Website — Phase 1: Homepage + Booking System
+
+# Full Dynamic Admin CMS for Himalay Homestay
 
 ## Overview
-Build a premium, mobile-first homestay website with earthy/nature color palette, Supabase-backed booking system, AI chatbot, and Nepali/English language toggle. React + Vite + Tailwind CSS + TypeScript.
+Transform the admin panel into a comprehensive content management system where every piece of website content (hero, about, contact, gallery, services, testimonials, rooms, site settings like logo) is stored in the database and editable from the admin dashboard. The admin remains accessible only via `/admin` URL (no nav link).
 
-## Design System
-- **Colors**: Earthy palette — warm greens, terracotta, cream/beige backgrounds, dark charcoal text
-- **Typography**: Inter (body), Plus Jakarta Sans (headings) — clean sans-serif hierarchy
-- **Style**: Flat UI, card-based layouts, subtle hover transitions, no heavy shadows
-- **Layout**: Mobile-first, sticky navbar, clean footer
+## Database Changes
 
-## Database Schema (Supabase)
-- **rooms** — id, name, type, description, price_per_night, capacity, amenities, images, is_available
-- **services** — id, name, type (hall/tent/food), description, price, unit
-- **bookings** — id, guest_name, guest_email, guest_phone, room_id, check_in, check_out, services (JSONB for add-ons), total_price, status (pending/confirmed/cancelled), created_at
-- **availability** — id, room_id, date, is_available
-- **contact_messages** — id, name, phone, message, created_at
-- **user_roles** — for admin auth (following secure role pattern)
+### New table: `site_settings`
+Key-value store for site-wide content (logo URL, site name, hero title, hero subtitle, hero image, about text, mission text, contact info, map embed URL, footer tagline, etc.).
 
-## Pages & Features
+| Column | Type | Purpose |
+|--------|------|---------|
+| id | uuid PK | |
+| key | text UNIQUE | e.g. `hero_title`, `logo_url`, `about_story` |
+| value | text | The content value |
+| updated_at | timestamptz | Last modified |
 
-### 1. Homepage
-- Hero with full-width image banner, tagline, and "Book Now" CTA
-- Service highlights: Rooms, Hall, Food, Tent (card grid)
-- Testimonials carousel (hardcoded realistic data)
-- Gallery preview (6 images linking to full gallery)
-- Contact section with embedded Google Map
-- Language toggle (EN/NP) in navbar
+RLS: Public SELECT, admin-only UPDATE/INSERT/DELETE.
 
-### 2. Booking Page (Multi-step form)
-- **Step 1**: Select service type (Room / Hall / Tent)
-- **Step 2**: Choose dates (calendar picker), room type, or tent quantity
-- **Step 3**: Add food services (breakfast/lunch checkboxes)
-- **Step 4**: Guest details form (name, phone, email)
-- **Step 5**: Booking summary with dynamic price calculation → Submit
-- Confirmation page with booking reference
-- Real-time availability check against Supabase
+### New table: `gallery_images`
+| Column | Type |
+|--------|------|
+| id | uuid PK |
+| url | text |
+| alt | text |
+| category | text (Rooms/Food/Events/Tents) |
+| sort_order | int |
+| created_at | timestamptz |
 
-### 3. Admin Dashboard (Protected)
-- Login page (email/password via Supabase Auth)
-- Bookings table — view, approve/reject, filter by status
-- Update room availability and pricing
-- Manage services (CRUD)
+RLS: Public SELECT, admin-only INSERT/UPDATE/DELETE.
 
-### 4. Gallery Page
-- Image grid with category filters (Rooms, Food, Events, Tents)
-- Lightbox preview on click
+### New table: `testimonials`
+| Column | Type |
+|--------|------|
+| id | uuid PK |
+| name | text |
+| location | text |
+| text | text |
+| rating | int |
+| is_visible | boolean |
+| created_at | timestamptz |
 
-### 5. About Page
-- Homestay story, mission, team highlights with realistic sample content
+RLS: Public SELECT, admin-only INSERT/UPDATE/DELETE.
 
-### 6. Contact Page
-- Contact form (name, phone, message) → saves to Supabase
-- Embedded map + business info
+### Storage bucket: `site-assets`
+For uploading logo, hero images, gallery photos, room images. Public bucket with admin-only upload policies.
 
-## Additional Features
-- **AI Chatbot**: Floating chat widget using Lovable AI for guest queries and booking assistance
-- **Language Toggle**: English/Nepali using i18n context provider
-- **Payment UI**: Payment section designed with Khalti/eSewa buttons (integration-ready, no live keys yet)
-- **Low Bandwidth**: Lazy-loaded images, minimal JS, optimized assets
-- **SEO**: Proper meta tags, semantic HTML
-- **Loading states & error handling** throughout
+### Seed `site_settings` with current hardcoded values
+Insert all current content (hero title/subtitle, about text, contact details, etc.) as initial rows.
 
-## Seed Data
-Realistic Nepali homestay content — room names, prices in NPR, Nepali location references, sample testimonials.
+## Admin Dashboard Tabs
+
+Expand the existing admin page with these management sections:
+
+1. **Site Settings** -- Edit logo, site name, hero title/subtitle/CTA text, hero background image (upload)
+2. **Rooms** -- CRUD rooms with image upload, pricing, capacity, amenities, availability toggle
+3. **Services** -- Edit service name, description, price, availability
+4. **Gallery** -- Add/remove images (upload or URL), assign category, reorder
+5. **Testimonials** -- Add/edit/remove testimonials, toggle visibility
+6. **About Page** -- Edit story text, mission text, highlight stats
+7. **Contact Info** -- Edit address, phone, email, map embed URL
+8. **Bookings** -- Existing booking management (already built)
+9. **Contact Messages** -- View submitted contact form messages
+
+Each section uses inline editing with save buttons and image upload via Supabase Storage.
+
+## Frontend Changes
+
+All public-facing components will fetch content from the database instead of using hardcoded values:
+
+- **HeroSection** -- Fetch hero title, subtitle, CTA text, background image from `site_settings`
+- **Navbar** -- Fetch logo URL and site name from `site_settings`
+- **Footer** -- Fetch contact info and tagline from `site_settings`
+- **ServicesSection** -- Fetch from `services` table (already exists, just needs to read from DB)
+- **TestimonialsSection** -- Fetch from `testimonials` table
+- **Gallery page** -- Fetch from `gallery_images` table
+- **About page** -- Fetch story, mission, highlights from `site_settings`
+- **Contact page** -- Fetch address, phone, email, map URL from `site_settings`
+
+A shared hook `useSiteSettings()` will fetch and cache all site settings.
+
+## Technical Details
+
+- **Image uploads**: Use Supabase Storage bucket `site-assets` with admin-only upload policies. Generate public URLs for display.
+- **Caching**: Use React Query to cache site settings and avoid redundant fetches.
+- **Responsive admin**: All admin forms use responsive grid layouts, work on mobile.
+- **No nav link to admin**: Admin stays accessible only via direct `/admin` URL.
+
+## Implementation Order
+1. Create database migration (site_settings, gallery_images, testimonials tables + storage bucket + seed data)
+2. Build `useSiteSettings` hook and update all public components to be dynamic
+3. Build admin sub-pages: Site Settings, Rooms CRUD, Gallery manager, Testimonials manager, About/Contact editors, Contact Messages viewer
+4. Add image upload functionality via Storage
+5. Test end-to-end
+
