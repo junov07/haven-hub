@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Layout from '@/components/Layout';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,8 +12,14 @@ import { toast } from 'sonner';
 
 const Contact = () => {
   const { t } = useLanguage();
+  const { data: settings } = useSiteSettings();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ name: '', phone: '', message: '' });
+
+  const address = settings?.contact_address || t('contact.address');
+  const phone = settings?.contact_phone || t('contact.phoneNum');
+  const email = settings?.contact_email || t('contact.email');
+  const mapUrl = settings?.contact_map_url || 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3516.3!2d83.9510!3d28.2096!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjjCsDEyJzM0LjYiTiA4M8KwNTcnMDMuNiJF!5e0!3m2!1sen!2snp!4v1';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,9 +65,9 @@ const Contact = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
               {[
-                { icon: MapPin, title: 'Address', value: t('contact.address') },
-                { icon: Phone, title: 'Phone', value: t('contact.phoneNum') },
-                { icon: Mail, title: 'Email', value: t('contact.email') },
+                { icon: MapPin, title: 'Address', value: address },
+                { icon: Phone, title: 'Phone', value: phone },
+                { icon: Mail, title: 'Email', value: email },
                 { icon: Clock, title: 'Hours', value: '24/7 Check-in Available' },
               ].map((item) => (
                 <Card key={item.title}>
@@ -78,7 +85,7 @@ const Contact = () => {
 
           <div className="rounded-lg overflow-hidden h-80 lg:h-full min-h-[400px]">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3516.3!2d83.9510!3d28.2096!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjjCsDEyJzM0LjYiTiA4M8KwNTcnMDMuNiJF!5e0!3m2!1sen!2snp!4v1"
+              src={mapUrl}
               width="100%"
               height="100%"
               style={{ border: 0 }}

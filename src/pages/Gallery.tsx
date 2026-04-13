@@ -1,28 +1,15 @@
 import { useState } from 'react';
 import Layout from '@/components/Layout';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useGalleryImages } from '@/hooks/useGalleryImages';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
 const categories = ['All', 'Rooms', 'Food', 'Events', 'Tents'] as const;
 
-const images = [
-  { url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80', category: 'Rooms', alt: 'Deluxe Room' },
-  { url: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&q=80', category: 'Rooms', alt: 'Mountain View Room' },
-  { url: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80', category: 'Rooms', alt: 'Traditional Room' },
-  { url: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80', category: 'Food', alt: 'Dal Bhat Set' },
-  { url: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=800&q=80', category: 'Food', alt: 'Nepali Momo' },
-  { url: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80', category: 'Food', alt: 'Local Cuisine' },
-  { url: 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=800&q=80', category: 'Events', alt: 'Cultural Evening' },
-  { url: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=800&q=80', category: 'Events', alt: 'Group Event' },
-  { url: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=800&q=80', category: 'Tents', alt: 'Camping Setup' },
-  { url: 'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=800&q=80', category: 'Tents', alt: 'Mountain Camping' },
-  { url: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&q=80', category: 'Rooms', alt: 'Suite' },
-  { url: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&q=80', category: 'Food', alt: 'Breakfast Spread' },
-];
-
 const Gallery = () => {
   const { t } = useLanguage();
+  const { data: images = [] } = useGalleryImages();
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);
 
@@ -36,7 +23,6 @@ const Gallery = () => {
         </h1>
         <p className="text-center text-muted-foreground mb-8">{t('gallery.subtitle')}</p>
 
-        {/* Category filter */}
         <div className="flex justify-center gap-2 mb-8 flex-wrap">
           {categories.map((cat) => (
             <button
@@ -53,11 +39,10 @@ const Gallery = () => {
           ))}
         </div>
 
-        {/* Image grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {filtered.map((img, i) => (
+          {filtered.map((img) => (
             <motion.div
-              key={img.url}
+              key={img.id}
               layout
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -73,10 +58,12 @@ const Gallery = () => {
               />
             </motion.div>
           ))}
+          {filtered.length === 0 && (
+            <p className="col-span-full text-center text-muted-foreground py-12">No images yet</p>
+          )}
         </div>
       </div>
 
-      {/* Lightbox */}
       <AnimatePresence>
         {lightboxImg && (
           <motion.div
@@ -89,7 +76,7 @@ const Gallery = () => {
             <button className="absolute top-4 right-4 text-primary-foreground" onClick={() => setLightboxImg(null)}>
               <X className="h-8 w-8" />
             </button>
-            <img src={lightboxImg.replace('w=800', 'w=1400')} alt="" className="max-w-full max-h-[90vh] rounded-lg object-contain" />
+            <img src={lightboxImg} alt="" className="max-w-full max-h-[90vh] rounded-lg object-contain" />
           </motion.div>
         )}
       </AnimatePresence>

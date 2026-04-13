@@ -1,31 +1,14 @@
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTestimonials } from '@/hooks/useTestimonials';
 import { motion } from 'framer-motion';
 import { Star, Quote } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
-const testimonials = [
-  {
-    name: 'Sarah Mitchell',
-    location: 'London, UK',
-    text: 'The most authentic homestay experience I\'ve ever had. The Gurung family made us feel like part of their own. The dal bhat was incredible!',
-    rating: 5,
-  },
-  {
-    name: 'Takeshi Yamamoto',
-    location: 'Tokyo, Japan',
-    text: 'Waking up to Annapurna views every morning was magical. The rooms are clean, the food is delicious, and the hospitality is unmatched.',
-    rating: 5,
-  },
-  {
-    name: 'Priya Sharma',
-    location: 'Delhi, India',
-    text: 'We booked the event hall for our yoga retreat and it was perfect. The staff went above and beyond to make everything smooth.',
-    rating: 5,
-  },
-];
-
 const TestimonialsSection = () => {
   const { t } = useLanguage();
+  const { data: testimonials = [] } = useTestimonials(true);
+
+  if (testimonials.length === 0) return null;
 
   return (
     <section className="py-20 bg-accent/50">
@@ -37,9 +20,9 @@ const TestimonialsSection = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {testimonials.map((item, i) => (
+          {testimonials.slice(0, 6).map((item, i) => (
             <motion.div
-              key={item.name}
+              key={item.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
