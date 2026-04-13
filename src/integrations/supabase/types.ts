@@ -120,6 +120,33 @@ export type Database = {
         }
         Relationships: []
       }
+      gallery_images: {
+        Row: {
+          alt: string
+          category: string
+          created_at: string
+          id: string
+          sort_order: number
+          url: string
+        }
+        Insert: {
+          alt?: string
+          category?: string
+          created_at?: string
+          id?: string
+          sort_order?: number
+          url: string
+        }
+        Update: {
+          alt?: string
+          category?: string
+          created_at?: string
+          id?: string
+          sort_order?: number
+          url?: string
+        }
+        Relationships: []
+      }
       rooms: {
         Row: {
           amenities: string[] | null
@@ -189,6 +216,57 @@ export type Database = {
           price?: number
           type?: Database["public"]["Enums"]["service_type"]
           unit?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          id: string
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          id?: string
+          key: string
+          updated_at?: string
+          value?: string
+        }
+        Update: {
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          created_at: string
+          id: string
+          is_visible: boolean
+          location: string
+          name: string
+          rating: number
+          text: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          location?: string
+          name: string
+          rating?: number
+          text: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          location?: string
+          name?: string
+          rating?: number
+          text?: string
         }
         Relationships: []
       }
