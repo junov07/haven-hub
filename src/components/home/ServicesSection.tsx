@@ -1,13 +1,15 @@
+import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
-import { Bed, Building2, UtensilsCrossed, Tent } from 'lucide-react';
+import { Bed, Building2, UtensilsCrossed, Tent, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 const services = [
-  { icon: Bed, titleKey: 'services.rooms', descKey: 'services.rooms.desc', price: 'NPR 2,500/night' },
-  { icon: Building2, titleKey: 'services.hall', descKey: 'services.hall.desc', price: 'NPR 15,000/day' },
-  { icon: UtensilsCrossed, titleKey: 'services.food', descKey: 'services.food.desc', price: 'NPR 500/meal' },
-  { icon: Tent, titleKey: 'services.tent', descKey: 'services.tent.desc', price: 'NPR 1,200/night' },
+  { icon: Bed, titleKey: 'services.rooms', descKey: 'services.rooms.desc', price: 'NPR 2,500/night', book: '/booking?service=room' },
+  { icon: Building2, titleKey: 'services.hall', descKey: 'services.hall.desc', price: 'NPR 15,000/day', book: '/booking?service=hall' },
+  { icon: UtensilsCrossed, titleKey: 'services.food', descKey: 'services.food.desc', price: 'NPR 500/meal', book: '/booking?service=room' },
+  { icon: Tent, titleKey: 'services.tent', descKey: 'services.tent.desc', price: 'NPR 1,200/night', book: '/booking?service=tent' },
 ];
 
 const ServicesSection = () => {
@@ -45,9 +47,14 @@ const ServicesSection = () => {
                   <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
                     {t(service.descKey)}
                   </p>
-                  <span className="text-sm font-semibold text-secondary">
+                  <span className="block text-sm font-semibold text-secondary mb-3">
                     {service.price}
                   </span>
+                  <Button asChild size="sm" variant="outline" className="w-full">
+                    <Link to={service.book}>
+                      Book Now <ArrowRight className="ml-1 h-3 w-3" />
+                    </Link>
+                  </Button>
                 </CardContent>
               </Card>
             </motion.div>
