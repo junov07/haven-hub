@@ -12,6 +12,18 @@ import { toast } from 'sonner';
 import { Plus, Trash2, Save, Loader2 } from 'lucide-react';
 import { useUploadSiteAsset } from '@/hooks/useSiteSettings';
 
+interface Room {
+  id: string;
+  name: string;
+  type: string;
+  description: string | null;
+  price_per_night: number;
+  capacity: number;
+  amenities: string[] | null;
+  image_url: string | null;
+  is_available: boolean;
+}
+
 const AdminRooms = () => {
   const queryClient = useQueryClient();
   const uploadAsset = useUploadSiteAsset();
@@ -71,7 +83,7 @@ const AdminRooms = () => {
     setForm({ name: '', type: '', description: '', price_per_night: 0, capacity: 2, amenities: '', image_url: '', is_available: true });
   };
 
-  const startEdit = (room: any) => {
+  const startEdit = (room: Room) => {
     setEditingId(room.id);
     setForm({
       name: room.name,

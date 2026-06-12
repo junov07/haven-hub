@@ -34,7 +34,7 @@ const AdminBookings = () => {
 
   const filtered = filter === 'all' ? bookings : bookings.filter((b) => b.status === filter);
 
-  const statusColor = (s: string) => {
+  const statusColor = (s: string): 'default' | 'destructive' | 'secondary' => {
     switch (s) {
       case 'confirmed': return 'default';
       case 'cancelled': return 'destructive';
@@ -77,7 +77,7 @@ const AdminBookings = () => {
                 <TableCell className="text-sm">{b.check_in} → {b.check_out}</TableCell>
                 <TableCell className="font-semibold">NPR {b.total_price.toLocaleString()}</TableCell>
                 <TableCell>
-                  <Badge variant={statusColor(b.status) as any}>{b.status}</Badge>
+                  <Badge variant={statusColor(b.status)}>{b.status}</Badge>
                 </TableCell>
                 <TableCell>
                   {b.status === 'pending' && (

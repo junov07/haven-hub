@@ -29,7 +29,9 @@ const About = () => {
         { icon: Mountain, value: h.rating || '4.8', label: 'Star Rating' },
         { icon: Leaf, value: h.rooms || '12', label: 'Rooms' },
       ];
-    } catch {}
+    } catch {
+      /* ignore malformed about_highlights JSON */
+    }
   }
 
   return (

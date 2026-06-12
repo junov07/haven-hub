@@ -29,8 +29,8 @@ const AdminLogin = ({ onLogin }: { onLogin: () => void }) => {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       onLogin();
-    } catch (err: any) {
-      toast.error(err.message || 'Login failed');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Login failed');
     } finally {
       setLoading(false);
     }
